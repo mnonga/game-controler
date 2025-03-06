@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, forwardRef, useImperativeHandle } from "react";
 import GamePad from "./GamePad";
 
 const roms = [
@@ -6,7 +6,7 @@ const roms = [
   { url: "/roms/Contra.nes", label: "Contra" },
 ];
 
-export default function NesEmulator() {
+const NesEmulator = forwardRef((props, ref) =>  {
   const [fps, setFps] = useState("");
   const [romUrl, setRomUrl] = useState(roms[0].url);
   const [nes, setNes] = useState(null);
@@ -19,6 +19,17 @@ export default function NesEmulator() {
 
   const [messages, setMessages] = useState("");
   const dumpRef = useRef(null);
+
+  useImperativeHandle(ref, () => ({
+    pressPadButton: (button) => {
+      console.log("pressPadButton", {button});
+      nes?.pad1.pressButton(button);
+    },
+    releasePadButton: (button) => {
+      console.log("releasePadButton", {button});
+      nes?.pad1.releaseButton(button);
+    },
+  }), [nes]);
 
   const putMessage = (str) => {
     setMessages((prev) => prev + str + "\n");
@@ -178,4 +189,6 @@ export default function NesEmulator() {
       </div>
     </div>
   );
-}
+});
+
+export default NesEmulator;

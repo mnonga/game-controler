@@ -133,3 +133,5 @@ Joypad.BUTTONS = {
   LEFT:   6,
   RIGHT:  7
 };
+
+export {Joypad};
