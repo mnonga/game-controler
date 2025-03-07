@@ -15,6 +15,7 @@ export default function FaceLandmarkDetection() {
   const [direction, setDirection] = useState(null)
   const [tilt, setTilt] = useState(null)
   const [mouthOpened, setMouthOpened] = useState(false)
+  const [leftHand, setLeftHand] = useState(null)
   const emulatorRef = useRef(null)
 
   return (
@@ -80,6 +81,27 @@ export default function FaceLandmarkDetection() {
                 return opened
               })
             }
+            onLeftHand={hand =>
+              setLeftHand(old => {
+                if (old?.isIndexPressed != hand?.isIndexPressed) {
+                  if (hand?.isIndexPressed) {
+                    emulatorRef.current.pressPadButton(Joypad.BUTTONS.B)
+                  } else {
+                    emulatorRef.current.releasePadButton(Joypad.BUTTONS.B)
+                  }
+                }
+
+                if (old?.isThumbPressed != hand?.isThumbPressed) {
+                  if (hand?.isThumbPressed) {
+                    emulatorRef.current.pressPadButton(Joypad.BUTTONS.A)
+                  } else {
+                    emulatorRef.current.releasePadButton(Joypad.BUTTONS.A)
+                  }
+                }
+
+                return hand
+              })
+            }
           ></FaceLandmarksDetection>
           <NesEmulator ref={emulatorRef} />
         </div>
@@ -87,6 +109,8 @@ export default function FaceLandmarkDetection() {
         <DirectionPad
           direction={direction}
           tilt={tilt}
+          aPressed={leftHand?.isThumbPressed}
+          bPressed={leftHand?.isIndexPressed}
           onPressButton={button => emulatorRef.current.pressPadButton(button)}
           onReleaseButton={button => emulatorRef.current.releasePadButton(button)}
         />

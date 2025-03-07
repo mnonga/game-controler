@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 
-const DirectionPad = ({ direction, tilt, onPressButton, onReleaseButton }) => {
+const DirectionPad = ({ direction, tilt, aPressed, bPressed, onPressButton, onReleaseButton }) => {
   const getButtonClass = dir =>
     `w-12 h-12 rounded-md text-lg font-bold transition-colors ${
       direction === dir || tilt === dir ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'
@@ -71,7 +71,7 @@ const DirectionPad = ({ direction, tilt, onPressButton, onReleaseButton }) => {
 
         <div className="flex gap-2">
           <button
-            className="w-12 h-12 bg-gray-300 hover:bg-gray-400 rounded-md"
+            className={`w-12 h-12 rounded-md ${aPressed ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'}`}
             onMouseDown={() => pressPadButton(Joypad.BUTTONS.A)}
             onMouseUp={() => releasePadButton(Joypad.BUTTONS.A)}
           >
@@ -79,7 +79,7 @@ const DirectionPad = ({ direction, tilt, onPressButton, onReleaseButton }) => {
           </button>
           <button className="w-12 h-12 bg-gray-400 rounded-md">○</button>
           <button
-            className="w-12 h-12 bg-gray-300 hover:bg-gray-400 rounded-md"
+            className={`w-12 h-12 rounded-md ${bPressed ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'}`}
             onMouseDown={() => pressPadButton(Joypad.BUTTONS.B)}
             onMouseUp={() => releasePadButton(Joypad.BUTTONS.B)}
           >
