@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import Link from 'next/link';
-import FpsCounter from '../components/FpsCounter';
+import Link from 'next/link'
+import FpsCounter from '../components/FpsCounter'
 import styles from '../styles/Home.module.css'
 
 export default function Home() {
@@ -14,9 +14,9 @@ export default function Home() {
         <script type="text/javascript" src="/nes.js"></script>
       </Head>
 
-      <main className={styles.main} style={{ justifyContent: "center" }}>
+      <main className={styles.main} style={{ justifyContent: 'center' }}>
         <h1 className={styles.title}>
-          Welcome to <Link href='/'>ml-app!</Link>
+          Welcome to <Link href="/">ml-app!</Link>
         </h1>
         {/* <FpsCounter /> */}
 

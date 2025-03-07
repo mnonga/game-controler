@@ -1,21 +1,21 @@
-import { useCallback } from "react";
+import { useCallback } from 'react'
 
 function GamePad({ nes }) {
   const pressPadButton = useCallback(
-    (button) => {
-      if (!nes) return;
-      nes.pad1.pressButton(button);
+    button => {
+      if (!nes) return
+      nes.pad1.pressButton(button)
     },
     [nes]
-  );
+  )
 
   const releasePadButton = useCallback(
-    (button) => {
-      if (!nes) return;
-      nes.pad1.releaseButton(button);
+    button => {
+      if (!nes) return
+      nes.pad1.releaseButton(button)
     },
     [nes]
-  );
+  )
 
   return (
     <div>
@@ -115,23 +115,23 @@ function GamePad({ nes }) {
         </tbody>
       </table>
     </div>
-  );
+  )
 }
 
-export default GamePad;
+export default GamePad
 
 // le package ne l'a pas exporté, mais dans le web ca marche
-const Joypad = {};
+const Joypad = {}
 
 Joypad.BUTTONS = {
-  A:      0,
-  B:      1,
+  A: 0,
+  B: 1,
   SELECT: 2,
-  START:  3,
-  UP:     4,
-  DOWN:   5,
-  LEFT:   6,
-  RIGHT:  7
-};
+  START: 3,
+  UP: 4,
+  DOWN: 5,
+  LEFT: 6,
+  RIGHT: 7,
+}
 
-export {Joypad};
+export { Joypad }
