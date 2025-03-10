@@ -24,6 +24,7 @@ import {
   detectHeadTiltByShape,
   detectHeadTurn,
   detectHeadTurnByNose,
+  eyesOpened,
   isLeftEyeOpen,
   isMouthOpen,
 } from '../lib/controls'
@@ -98,7 +99,13 @@ const Mode = {
 
 const ModeOptions = Object.entries(Mode).map(([label, value]) => ({ label, value }))
 
-export default function FaceLandmarksDetection({ onDirection, onMouthOpened, onTilt, onLeftHand }) {
+export default function FaceLandmarksDetection({
+  onDirection,
+  onMouthOpened,
+  onTilt,
+  onLeftHand,
+  onEyes,
+}) {
   const detectorFaceRef = useRef()
   const detectorHandRef = useRef()
   const videoRef = useRef()
@@ -115,14 +122,10 @@ export default function FaceLandmarksDetection({ onDirection, onMouthOpened, onT
   const [direction, setDirection] = useState(null)
   const [mouthOpened, setMouthOpened] = useState(false)
   const [tilt, setTilt] = useState(null)
-  const [leftEyeOpened, setLeftEyeOpened] = useState(false)
+  const [eyes, setEyes] = useState(null)
   const [leftHand, setLeftHand] = useState(null)
 
   const referencePoint = useRef(null)
-  const lastMoveTime = useRef(Date.now())
-  const [currentQuadrant, setCurrentQuadrant] = useState(null)
-  const movementThreshold = 3 // Seuil de mouvement minimal
-  const resetTime = 1000 // Temps avant de réinitialiser le centre (1s)
 
   useEffect(() => {
     async function initialize() {
@@ -139,6 +142,10 @@ export default function FaceLandmarksDetection({ onDirection, onMouthOpened, onT
   useEffect(() => {
     onDirection?.(direction)
   }, [direction])
+
+  useEffect(() => {
+    onEyes?.(eyes)
+  }, [eyes])
 
   useEffect(() => {
     onMouthOpened?.(mouthOpened)
@@ -190,7 +197,7 @@ export default function FaceLandmarksDetection({ onDirection, onMouthOpened, onT
         setDirection(detectHeadTurnByNose(faces[0]))
         setMouthOpened(isMouthOpen(faces[0]))
         setTilt(detectHeadTiltByNose(faces[0]))
-        //setLeftEyeOpened(isLeftEyeOpen(faces[0]))
+        setEyes(eyesOpened(faces[0], ctx))
       }
     }
 
@@ -241,7 +248,7 @@ export default function FaceLandmarksDetection({ onDirection, onMouthOpened, onT
   )
 
   return (
-    <>
+    <div className="flex flex-col gap-4">
       <select
         value={mode}
         onChange={e => setMode(e.target.value)}
@@ -262,7 +269,6 @@ export default function FaceLandmarksDetection({ onDirection, onMouthOpened, onT
         playsInline
         className="invisible scale-x-[-1] absolute top-0 left-0 w-0 h-0"
       ></video>
-      <div>letEye: {leftEyeOpened}</div>
-    </>
+    </div>
   )
 }

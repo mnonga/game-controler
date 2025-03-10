@@ -1,11 +1,15 @@
 import React, { useCallback } from 'react'
 
-const DirectionPad = ({ direction, tilt, aPressed, bPressed, onPressButton, onReleaseButton }) => {
-  const getButtonClass = dir =>
-    `w-12 h-12 rounded-md text-lg font-bold transition-colors ${
-      direction === dir || tilt === dir ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'
-    }`
-
+const DirectionPad = ({
+  aPressed,
+  bPressed,
+  uPressed,
+  dPressed,
+  rPressed,
+  lPressed,
+  onPressButton,
+  onReleaseButton,
+}) => {
   const pressPadButton = useCallback(
     button => {
       onPressButton?.(button)
@@ -25,7 +29,9 @@ const DirectionPad = ({ direction, tilt, aPressed, bPressed, onPressButton, onRe
       {/* Directional Pad */}
       <div className="flex flex-col items-center gap-2 p-3 bg-gray-100 rounded-lg">
         <button
-          className={getButtonClass('UP')}
+          className={`w-12 h-12 rounded-md text-lg font-bold transition-colors ${
+            uPressed ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'
+          }`}
           onMouseDown={() => pressPadButton(Joypad.BUTTONS.UP)}
           onMouseUp={() => releasePadButton(Joypad.BUTTONS.UP)}
         >
@@ -34,7 +40,9 @@ const DirectionPad = ({ direction, tilt, aPressed, bPressed, onPressButton, onRe
 
         <div className="flex gap-2">
           <button
-            className={getButtonClass('LEFT')}
+            className={`w-12 h-12 rounded-md text-lg font-bold transition-colors ${
+              lPressed ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'
+            }`}
             onMouseDown={() => pressPadButton(Joypad.BUTTONS.LEFT)}
             onMouseUp={() => releasePadButton(Joypad.BUTTONS.LEFT)}
           >
@@ -42,7 +50,9 @@ const DirectionPad = ({ direction, tilt, aPressed, bPressed, onPressButton, onRe
           </button>
           <button className="w-12 h-12 bg-gray-400 rounded-md">○</button>
           <button
-            className={getButtonClass('RIGHT')}
+            className={`w-12 h-12 rounded-md text-lg font-bold transition-colors ${
+              rPressed ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'
+            }`}
             onMouseDown={() => pressPadButton(Joypad.BUTTONS.RIGHT)}
             onMouseUp={() => releasePadButton(Joypad.BUTTONS.RIGHT)}
           >
@@ -51,7 +61,9 @@ const DirectionPad = ({ direction, tilt, aPressed, bPressed, onPressButton, onRe
         </div>
 
         <button
-          className={getButtonClass('DOWN')}
+          className={`w-12 h-12 rounded-md text-lg font-bold transition-colors ${
+            dPressed ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'
+          }`}
           onMouseDown={() => pressPadButton(Joypad.BUTTONS.DOWN)}
           onMouseUp={() => releasePadButton(Joypad.BUTTONS.DOWN)}
         >
