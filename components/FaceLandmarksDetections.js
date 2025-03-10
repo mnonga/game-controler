@@ -2,7 +2,16 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAnimationFrame } from '../lib/hooks/useAnimationFrame'
 import '@tensorflow/tfjs-backend-webgl'
 import * as tfjsWasm from '@tensorflow/tfjs-backend-wasm'
-import { drawFaces, drawNoses, drawHands, drawCircle, drawXCross, getQuadrant } from '../lib/utils'
+import {
+  drawFaces,
+  drawNoses,
+  drawHands,
+  drawCircle,
+  drawXCross,
+  getQuadrant,
+  drawFilledCircle,
+  fillXQuadrant,
+} from '../lib/utils'
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection'
 import * as handPoseDetection from '@tensorflow-models/hand-pose-detection'
 import * as faceMesh from '@mediapipe/face_mesh'
@@ -145,43 +154,15 @@ export default function FaceLandmarksDetection({ onDirection, onMouthOpened, onT
 
   const updateReferencePoint = useCallback(
     throttle(hand => {
-      console.log('throttling...', hand.keypoints[0])
-      referencePoint.current = {
-        point: hand.keypoints[0],
-        radius: (hand.keypoints[0].y - hand.keypoints[5].y) * 1.5,
-      }
-    }, 300),
+      let radius = (hand.keypoints[0].y - hand.keypoints[5].y) * 1.5
+      if (radius > 0)
+        referencePoint.current = {
+          point: hand.keypoints[0],
+          radius,
+        }
+    }, 3000),
     []
   )
-
-  /*useEffect(() => {
-    if (!leftHand) return // Ne fait rien si aucune main n'est détectée
-
-    
-    const wrist = leftHand.keypoints[0]
-
-    if (!referencePoint.current) {
-      referencePoint.current = wrist // Initialisation du centre
-      return
-    }
-
-    console.log("here")
-
-    // Calcul de la distance par rapport au centre de référence
-    const dx = wrist.x - referencePoint.current.x
-    const dy = wrist.y - referencePoint.current.y
-    const distance = Math.sqrt(dx * dx + dy * dy)
-
-    if (distance > movementThreshold) {
-      setCurrentQuadrant(getQuadrant(referencePoint.current, wrist))
-      lastMoveTime.current = Date.now() // Mise à jour du dernier mouvement
-    }
-
-    // Réinitialisation du centre après `resetTime` d'inactivité
-    if (Date.now() - lastMoveTime.current > resetTime) {
-      referencePoint.current = wrist
-    }
-  }, [leftHand])*/
 
   const detect = useCallback(async () => {
     const faces = isFaceEnabled()
@@ -206,9 +187,9 @@ export default function FaceLandmarksDetection({ onDirection, onMouthOpened, onT
 
     if (isFaceEnabled()) {
       if (faces.length > 0) {
-        //setDirection(detectHeadTurnByNose(faces[0]))
-        //setMouthOpened(isMouthOpen(faces[0]))
-        //setTilt(detectHeadTiltByNose(faces[0]))
+        setDirection(detectHeadTurnByNose(faces[0]))
+        setMouthOpened(isMouthOpen(faces[0]))
+        setTilt(detectHeadTiltByNose(faces[0]))
         //setLeftEyeOpened(isLeftEyeOpen(faces[0]))
       }
     }
@@ -227,24 +208,26 @@ export default function FaceLandmarksDetection({ onDirection, onMouthOpened, onT
             if (referencePoint.current) {
               let center = referencePoint.current.point
               let radius = referencePoint.current.radius
-              //let radius = (hand.keypoints[0].y - hand.keypoints[5].y) * 1.5
-              drawCircle({ ctx, point: center, radius, color: 'rgba(0, 200, 200, 0.7)' })
+              //drawCircle({ ctx, point: center, radius, color: 'rgba(0, 200, 200, 0.7)' })
+              drawFilledCircle({
+                ctx,
+                point: center,
+                radius,
+                color: 'rgba(0, 200, 200, 0.7)',
+                innerRadius: radius * 0.4,
+              })
               drawXCross(ctx, center, radius)
-            }
-
-            /*debouncer(() => {
-              console.log('debouncing...', hand.keypoints[0])
-              referencePoint.current = {
-                point: hand.keypoints[0],
-                radius: (hand.keypoints[0].y - hand.keypoints[5].y) * 1.5,
+              let quadrant = getQuadrant(center, hand.keypoints[0], radius * 0.4, radius)
+              if (quadrant) {
+                fillXQuadrant(ctx, center, radius, radius * 0.4, quadrant, 'rgba(242, 255, 5, 0.7)')
+                if (quadrant == 'left') setDirection('LEFT')
+                else if (quadrant == 'right') setDirection('RIGHT')
+                else if (quadrant == 'top') setTilt('UP')
+                else if (quadrant == 'bottom') setTilt('DOWN')
               }
-            })*/
+            }
 
             updateReferencePoint(hand)
-
-            if (currentQuadrant) {
-              fillQuadrant(ctx, referencePoint.current, radius, currentQuadrant)
-            }
           }
         }
         if (!found) setLeftHand(null)
