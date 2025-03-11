@@ -193,17 +193,28 @@ export default function FaceLandmarksDetection({
     }
 
     if (isFaceEnabled()) {
-      if (faces.length > 0) {
+      if (faces?.length) {
         setDirection(detectHeadTurnByNose(faces[0]))
         setMouthOpened(isMouthOpen(faces[0]))
         setTilt(detectHeadTiltByNose(faces[0]))
         setEyes(eyesOpened(faces[0], ctx))
+      } else {
+        setEyes(null)
+        setMouthOpened(null)
+        if (!isHandEnabled()) {
+          setDirection(null)
+          setTilt(null)
+        }
       }
     }
 
     if (isHandEnabled()) {
       if (!hands?.length) {
         setLeftHand(null)
+        if (!isFaceEnabled()) {
+          setDirection(null)
+          setMouthOpened(null)
+        }
       } else {
         let found = false
         for (let hand of hands) {

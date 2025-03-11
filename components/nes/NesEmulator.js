@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
 import GamePad from './GamePad'
 
-const roms = [
+export const roms = [
   { url: '/roms/Super Mario Bros Europe.nes', label: 'Super Mario Bros' },
   { url: '/roms/Contra.nes', label: 'Contra' },
 ]

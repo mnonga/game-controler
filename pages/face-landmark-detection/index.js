@@ -6,6 +6,8 @@ import Head from 'next/head'
 import { useState, useRef } from 'react'
 import { Joypad } from '../../components/nes/GamePad'
 import DirectionPad from '../../components/nes/DirectionPad'
+import JnesEmulator from '../../components/jsnes/JnesEmulator'
+import { Controller } from 'jsnes'
 
 const FaceLandmarksDetection = dynamic(() => import('../../components/FaceLandmarksDetections'), {
   ssr: false,
@@ -18,6 +20,7 @@ export default function FaceLandmarkDetection() {
   const [leftHand, setLeftHand] = useState(null)
   const [eyes, setEyes] = useState(null)
   const emulatorRef = useRef(null)
+  const jnesEmulatorRef = useRef(null)
 
   return (
     <div className={styles.container}>
@@ -87,16 +90,20 @@ export default function FaceLandmarkDetection() {
                 if (old?.isIndexPressed != hand?.isIndexPressed) {
                   if (hand?.isIndexPressed) {
                     emulatorRef.current.pressPadButton(Joypad.BUTTONS.B)
+                    jnesEmulatorRef.current.pressPadButton(Controller.BUTTON_B)
                   } else {
                     emulatorRef.current.releasePadButton(Joypad.BUTTONS.B)
+                    jnesEmulatorRef.current.releasePadButton(Controller.BUTTON_B)
                   }
                 }
 
                 if (old?.isThumbPressed != hand?.isThumbPressed) {
                   if (hand?.isThumbPressed) {
                     emulatorRef.current.pressPadButton(Joypad.BUTTONS.A)
+                    jnesEmulatorRef.current.pressPadButton(Controller.BUTTON_A)
                   } else {
                     emulatorRef.current.releasePadButton(Joypad.BUTTONS.A)
+                    jnesEmulatorRef.current.releasePadButton(Controller.BUTTON_A)
                   }
                 }
 
@@ -126,6 +133,7 @@ export default function FaceLandmarkDetection() {
             }
           ></FaceLandmarksDetection>
           <NesEmulator ref={emulatorRef} />
+          <JnesEmulator ref={jnesEmulatorRef} />
         </div>
 
         <DirectionPad
@@ -135,8 +143,14 @@ export default function FaceLandmarkDetection() {
           rPressed={direction == 'RIGHT'}
           aPressed={leftHand?.isThumbPressed || eyes?.rightClosed}
           bPressed={leftHand?.isIndexPressed || eyes?.leftClosed}
-          onPressButton={button => emulatorRef.current.pressPadButton(button)}
-          onReleaseButton={button => emulatorRef.current.releasePadButton(button)}
+          onPressButton={button => {
+            emulatorRef.current.pressPadButton(button)
+            jnesEmulatorRef.current.pressPadButton(button)
+          }}
+          onReleaseButton={button => {
+            emulatorRef.current.releasePadButton(button)
+            jnesEmulatorRef.current.releasePadButton(button)
+          }}
         />
       </main>
     </div>

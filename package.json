@@ -20,17 +20,21 @@
     "@tensorflow/tfjs-backend-webgl": "^4.0.0",
     "@tensorflow/tfjs-converter": "^4.0.0",
     "@tensorflow/tfjs-core": "^4.0.0",
+    "jsnes": "^1.2.1",
     "lodash": "^4.17.21",
     "nes-js": "^0.0.1",
     "next": "13.0.0",
     "react": "18.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "prop-types": "^15.7.2",
+    "raven-js": "^3.27.2",
+    "ringbufferjs": "^1.1.0"
   },
   "devDependencies": {
     "eslint": "8.26.0",
     "eslint-config-next": "13.0.0",
-    "tailwindcss": "^3.4.1",
     "postcss": "^8",
-    "prettier": "^3.5.2"
+    "prettier": "^3.5.2",
+    "tailwindcss": "^3.4.1"
   }
 }
