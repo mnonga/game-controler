@@ -1,4 +1,5 @@
-import React, { useCallback } from 'react'
+import React, { useCallback } from 'react';
+import { Controller } from 'jsnes';
 
 const DirectionPad = ({
   aPressed,
@@ -12,17 +13,17 @@ const DirectionPad = ({
 }) => {
   const pressPadButton = useCallback(
     button => {
-      onPressButton?.(button)
+      onPressButton?.(button);
     },
     [onPressButton]
-  )
+  );
 
   const releasePadButton = useCallback(
     button => {
-      onReleaseButton?.(button)
+      onReleaseButton?.(button);
     },
     [onReleaseButton]
-  )
+  );
 
   return (
     <div className="flex gap-5 items-start">
@@ -32,8 +33,8 @@ const DirectionPad = ({
           className={`w-12 h-12 rounded-md text-lg font-bold transition-colors ${
             uPressed ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'
           }`}
-          onMouseDown={() => pressPadButton(Joypad.BUTTONS.UP)}
-          onMouseUp={() => releasePadButton(Joypad.BUTTONS.UP)}
+          onMouseDown={() => pressPadButton(Controller.BUTTON_UP)}
+          onMouseUp={() => releasePadButton(Controller.BUTTON_UP)}
         >
           ↑
         </button>
@@ -43,8 +44,8 @@ const DirectionPad = ({
             className={`w-12 h-12 rounded-md text-lg font-bold transition-colors ${
               lPressed ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'
             }`}
-            onMouseDown={() => pressPadButton(Joypad.BUTTONS.LEFT)}
-            onMouseUp={() => releasePadButton(Joypad.BUTTONS.LEFT)}
+            onMouseDown={() => pressPadButton(Controller.BUTTON_LEFT)}
+            onMouseUp={() => releasePadButton(Controller.BUTTON_LEFT)}
           >
             ←
           </button>
@@ -53,8 +54,8 @@ const DirectionPad = ({
             className={`w-12 h-12 rounded-md text-lg font-bold transition-colors ${
               rPressed ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'
             }`}
-            onMouseDown={() => pressPadButton(Joypad.BUTTONS.RIGHT)}
-            onMouseUp={() => releasePadButton(Joypad.BUTTONS.RIGHT)}
+            onMouseDown={() => pressPadButton(Controller.BUTTON_RIGHT)}
+            onMouseUp={() => releasePadButton(Controller.BUTTON_RIGHT)}
           >
             →
           </button>
@@ -64,8 +65,8 @@ const DirectionPad = ({
           className={`w-12 h-12 rounded-md text-lg font-bold transition-colors ${
             dPressed ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'
           }`}
-          onMouseDown={() => pressPadButton(Joypad.BUTTONS.DOWN)}
-          onMouseUp={() => releasePadButton(Joypad.BUTTONS.DOWN)}
+          onMouseDown={() => pressPadButton(Controller.BUTTON_DOWN)}
+          onMouseUp={() => releasePadButton(Controller.BUTTON_DOWN)}
         >
           ↓
         </button>
@@ -75,8 +76,8 @@ const DirectionPad = ({
       <div className="flex flex-col items-center gap-2 p-3 bg-gray-100 rounded-lg">
         <button
           className="w-16 h-8 bg-gray-300 hover:bg-gray-400 rounded-md"
-          onMouseDown={() => pressPadButton(Joypad.BUTTONS.START)}
-          onMouseUp={() => releasePadButton(Joypad.BUTTONS.START)}
+          onMouseDown={() => pressPadButton(Controller.BUTTON_START)}
+          onMouseUp={() => releasePadButton(Controller.BUTTON_START)}
         >
           Start
         </button>
@@ -84,16 +85,16 @@ const DirectionPad = ({
         <div className="flex gap-2">
           <button
             className={`w-12 h-12 rounded-md ${aPressed ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'}`}
-            onMouseDown={() => pressPadButton(Joypad.BUTTONS.A)}
-            onMouseUp={() => releasePadButton(Joypad.BUTTONS.A)}
+            onMouseDown={() => pressPadButton(Controller.BUTTON_A)}
+            onMouseUp={() => releasePadButton(Controller.BUTTON_A)}
           >
             A
           </button>
           <button className="w-12 h-12 bg-gray-400 rounded-md">○</button>
           <button
             className={`w-12 h-12 rounded-md ${bPressed ? 'bg-blue-500 text-white' : 'bg-gray-300 hover:bg-gray-400'}`}
-            onMouseDown={() => pressPadButton(Joypad.BUTTONS.B)}
-            onMouseUp={() => releasePadButton(Joypad.BUTTONS.B)}
+            onMouseDown={() => pressPadButton(Controller.BUTTON_B)}
+            onMouseUp={() => releasePadButton(Controller.BUTTON_B)}
           >
             B
           </button>
@@ -101,30 +102,14 @@ const DirectionPad = ({
 
         <button
           className="w-16 h-8 bg-gray-300 hover:bg-gray-400 rounded-md"
-          onMouseDown={() => pressPadButton(Joypad.BUTTONS.SELECT)}
-          onMouseUp={() => releasePadButton(Joypad.BUTTONS.SELECT)}
+          onMouseDown={() => pressPadButton(Controller.BUTTON_SELECT)}
+          onMouseUp={() => releasePadButton(Controller.BUTTON_BUTTON_SELECT)}
         >
           Select
         </button>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default DirectionPad
-
-// Joypad Config
-const Joypad = {
-  BUTTONS: {
-    A: 0,
-    B: 1,
-    SELECT: 2,
-    START: 3,
-    UP: 4,
-    DOWN: 5,
-    LEFT: 6,
-    RIGHT: 7,
-  },
-}
-
-export { Joypad }
+export default DirectionPad;

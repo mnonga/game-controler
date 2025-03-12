@@ -1,4 +1,4 @@
-import { Controller } from 'jsnes'
+import { Controller } from 'jsnes';
 
 // Mapping keyboard code to [controller, button]
 const KEYS = {
@@ -19,54 +19,54 @@ const KEYS = {
   98: [2, Controller.BUTTON_DOWN, 'Num-2'], // Num-2
   100: [2, Controller.BUTTON_LEFT, 'Num-4'], // Num-4
   102: [2, Controller.BUTTON_RIGHT, 'Num-6'], // Num-6
-}
+};
 
 export default class KeyboardController {
   constructor(options) {
-    this.onButtonDown = options.onButtonDown
-    this.onButtonUp = options.onButtonUp
+    this.onButtonDown = options.onButtonDown;
+    this.onButtonUp = options.onButtonUp;
   }
 
   loadKeys = () => {
-    var keys
+    var keys;
     try {
-      keys = localStorage.getItem('keys')
+      keys = localStorage.getItem('keys');
       if (keys) {
-        keys = JSON.parse(keys)
+        keys = JSON.parse(keys);
       }
     } catch (e) {
-      console.log('Failed to get keys from localStorage.', e)
+      console.log('Failed to get keys from localStorage.', e);
     }
 
-    this.keys = keys || KEYS
-  }
+    this.keys = keys || KEYS;
+  };
 
   setKeys = newKeys => {
     try {
-      localStorage.setItem('keys', JSON.stringify(newKeys))
-      this.keys = newKeys
+      localStorage.setItem('keys', JSON.stringify(newKeys));
+      this.keys = newKeys;
     } catch (e) {
-      console.log('Failed to set keys in localStorage')
+      console.log('Failed to set keys in localStorage');
     }
-  }
+  };
 
   handleKeyDown = e => {
-    var key = this.keys[e.keyCode]
+    var key = this.keys[e.keyCode];
     if (key) {
-      this.onButtonDown(key[0], key[1])
-      e.preventDefault()
+      this.onButtonDown(key[0], key[1]);
+      e.preventDefault();
     }
-  }
+  };
 
   handleKeyUp = e => {
-    var key = this.keys[e.keyCode]
+    var key = this.keys[e.keyCode];
     if (key) {
-      this.onButtonUp(key[0], key[1])
-      e.preventDefault()
+      this.onButtonUp(key[0], key[1]);
+      e.preventDefault();
     }
-  }
+  };
 
   handleKeyPress = e => {
-    e.preventDefault()
-  }
+    e.preventDefault();
+  };
 }

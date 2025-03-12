@@ -1,49 +1,49 @@
-import { useState, useCallback, useRef, useEffect, forwardRef, useImperativeHandle } from 'react'
-import Emulator from './Emulator'
-import { Controller } from 'jsnes'
+import { useState, useCallback, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import Emulator from './Emulator';
+import { Controller } from 'jsnes';
 
 export const roms = [
   { url: '/roms/Super Mario Bros Europe.nes', label: 'Super Mario Bros' },
   { url: '/roms/Contra.nes', label: 'Contra' },
-]
+];
 
-const JnesEmulator = forwardRef((props, ref) => {
-  const [romUrl, setRomUrl] = useState(roms[0].url)
+const JnesEmulator = forwardRef(({ width, height }, ref) => {
+  const [romUrl, setRomUrl] = useState(roms[0].url);
 
-  const [romData, setRomData] = useState(null)
-  const [paused, setPaused] = useState(false)
-  const emulator = useRef(null)
+  const [romData, setRomData] = useState(null);
+  const [paused, setPaused] = useState(false);
+  const emulator = useRef(null);
 
   useImperativeHandle(
     ref,
     () => ({
       pressPadButton: button => {
-        emulator.current?.nes.buttonDown(1, button)
+        emulator.current?.nes.buttonDown(1, button);
       },
       releasePadButton: button => {
-        emulator.current?.nes.buttonUp(1, button)
+        emulator.current?.nes.buttonUp(1, button);
       },
     }),
     [emulator.current]
-  )
+  );
 
   function loadRom() {
-    let req = new XMLHttpRequest()
-    req.open('GET', romUrl)
-    req.overrideMimeType('text/plain; charset=x-user-defined')
-    req.onerror = () => console.log(`Error loading ${romUrl}: ${req.statusText}`)
+    let req = new XMLHttpRequest();
+    req.open('GET', romUrl);
+    req.overrideMimeType('text/plain; charset=x-user-defined');
+    req.onerror = () => console.log(`Error loading ${romUrl}: ${req.statusText}`);
 
     req.onload = function () {
       if (this.status === 200) {
-        setRomData(this.responseText)
+        setRomData(this.responseText);
       } else if (this.status === 0) {
         // Aborted, so ignore error
       } else {
-        req.onerror()
+        req.onerror();
       }
-    }
+    };
 
-    req.send()
+    req.send();
   }
 
   return (
@@ -77,8 +77,10 @@ const JnesEmulator = forwardRef((props, ref) => {
               romData={romData}
               paused={paused}
               ref={emulator_ => {
-                emulator.current = emulator_
+                emulator.current = emulator_;
               }}
+              width={width}
+              height={height}
             />
           )}
         </div>
@@ -96,7 +98,7 @@ const JnesEmulator = forwardRef((props, ref) => {
         </div>
       )}
     </div>
-  )
-})
+  );
+});
 
-export default JnesEmulator
+export default JnesEmulator;
