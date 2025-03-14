@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 
 const SCREEN_WIDTH = 256;
@@ -15,8 +16,8 @@ class Screen extends Component {
         style={{
           border: '1px solid red',
           imageRendering: 'pixelated',
-          width: `${this.props.width}px`,
-          height: `${this.props.height}px`,
+          width: `${this.props.width * 1.5}px`,
+          height: `${this.props.height * 1.5}px`,
         }}
         onMouseUp={this.props.onMouseUp}
         ref={canvas => {
@@ -105,3 +106,11 @@ class Screen extends Component {
 }
 
 export default Screen;
+
+Screen.propTypes = {
+  onGenerateFrame: PropTypes.func.isRequired,
+  onMouseDown: PropTypes.func.isRequired,
+  onMouseUp: PropTypes.func.isRequired,
+  width: PropTypes.number.isRequired,
+  height: PropTypes.number.isRequired,
+};

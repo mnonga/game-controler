@@ -68,6 +68,15 @@ const JnesEmulator = forwardRef(({ width, height }, ref) => {
         >
           Load Rom
         </button>
+        {romData && (
+          <button
+            disabled={!romData}
+            onClick={() => setPaused(val => !val)}
+            className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md disabled:opacity-50 hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
+          >
+            {paused ? 'Continue' : 'Pause'}
+          </button>
+        )}
       </div>
 
       <div className="flex items-start gap-4">
@@ -85,18 +94,6 @@ const JnesEmulator = forwardRef(({ width, height }, ref) => {
           )}
         </div>
       </div>
-
-      {romData && (
-        <div className="flex gap-4">
-          <button
-            disabled={!romData}
-            onClick={() => setPaused(val => !val)}
-            className="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg shadow-md disabled:opacity-50 hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:outline-none"
-          >
-            {paused ? 'Continue' : 'Pause'}
-          </button>
-        </div>
-      )}
     </div>
   );
 });

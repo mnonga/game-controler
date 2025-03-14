@@ -11,6 +11,8 @@ import {
   getQuadrant,
   drawFilledCircle,
   fillXQuadrant,
+  drawLine,
+  getDistance,
 } from '../lib/utils';
 import * as faceLandmarksDetection from '@tensorflow-models/face-landmarks-detection';
 import * as handPoseDetection from '@tensorflow-models/hand-pose-detection';
@@ -28,6 +30,7 @@ import {
   isLeftEyeOpen,
   isMouthOpen,
 } from '../lib/controls';
+import { useHandDirection } from '../lib/hooks/useHandDirection';
 
 // open https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm/
 //tfjsWasm.setWasmPaths(`https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm`);
@@ -99,18 +102,30 @@ const Mode = {
 
 const ModeOptions = Object.entries(Mode).map(([label, value]) => ({ label, value }));
 
+const innerRadiusPercent = 0.3;
+const fingerMoveDistance = 30;
+
 export default function FaceLandmarksDetection({
   onDirection,
   onMouthOpened,
   onTilt,
   onLeftHand,
   onEyes,
+  onFingerDirection,
 }) {
   const detectorFaceRef = useRef();
   const detectorHandRef = useRef();
   const videoRef = useRef();
   const [ctx, setCtx] = useState();
   const [mode, setMode] = useState(Mode.Hand);
+
+  const {
+    direction: fingerDirection,
+    updatePosition,
+    previousPosition,
+  } = useHandDirection({
+    threshold: fingerMoveDistance,
+  });
 
   const contours = faceLandmarksDetection.util.getKeypointIndexByContour(
     faceLandmarksDetection.SupportedModels.MediaPipeFaceMesh
@@ -152,6 +167,10 @@ export default function FaceLandmarksDetection({
   }, [mouthOpened]);
 
   useEffect(() => {
+    onFingerDirection?.(fingerDirection);
+  }, [fingerDirection]);
+
+  useEffect(() => {
     onTilt?.(tilt);
   }, [tilt]);
 
@@ -160,13 +179,11 @@ export default function FaceLandmarksDetection({
   }, [leftHand?.isIndexPressed, leftHand?.isThumbPressed, leftHand?.hand]);
 
   const updateReferencePoint = useCallback(
-    throttle(hand => {
-      let radius = (hand.keypoints[0].y - hand.keypoints[5].y) * 1.5;
-      if (radius > 0)
-        referencePoint.current = {
-          point: hand.keypoints[0],
-          radius,
-        };
+    throttle((point, radius) => {
+      referencePoint.current = {
+        point,
+        radius,
+      };
     }, 3000),
     []
   );
@@ -191,6 +208,7 @@ export default function FaceLandmarksDetection({
     if (isHandEnabled()) {
       drawHands(hands, ctx);
     }
+    drawLine(ctx, { x: 0, y: 0 }, { x: fingerMoveDistance, y: fingerMoveDistance }, 'red', 10);
 
     if (isFaceEnabled()) {
       if (faces?.length) {
@@ -213,6 +231,7 @@ export default function FaceLandmarksDetection({
         setLeftHand(null);
         if (!isFaceEnabled()) {
           setDirection(null);
+          setTilt(null);
           setMouthOpened(null);
         }
       } else {
@@ -223,42 +242,77 @@ export default function FaceLandmarksDetection({
             setLeftHand(data);
             found = true;
 
+            let quadrant = null;
+            let indexFingerTip = hand.keypoints[8];
+
+            if (
+              previousPosition?.x != null &&
+              getDistance(indexFingerTip, previousPosition) >= fingerMoveDistance
+            ) {
+              drawLine(ctx, indexFingerTip, previousPosition, 'yellow', 5);
+            }
+            updatePosition(indexFingerTip);
+
             if (referencePoint.current) {
               let center = referencePoint.current.point;
               let radius = referencePoint.current.radius;
-              //drawCircle({ ctx, point: center, radius, color: 'rgba(0, 200, 200, 0.7)' })
-              drawFilledCircle({
+              /*drawFilledCircle({
                 ctx,
                 point: center,
                 radius,
                 color: 'rgba(0, 200, 200, 0.7)',
-                innerRadius: radius * 0.4,
-              });
-              drawXCross(ctx, center, radius);
-              let quadrant = getQuadrant(center, hand.keypoints[0], radius * 0.4, radius);
-              if (quadrant) {
+                innerRadius: radius * innerRadiusPercent,
+              });*/
+              //drawXCross(ctx, center, radius);
+              //quadrant = getQuadrant(center, hand.keypoints[0], radius * innerRadiusPercent, radius);
+              quadrant = getQuadrant(center, indexFingerTip, radius * innerRadiusPercent, radius);
+              /*if (quadrant) {
                 fillXQuadrant(
                   ctx,
                   center,
                   radius,
-                  radius * 0.4,
+                  radius * innerRadiusPercent,
                   quadrant,
                   'rgba(242, 255, 5, 0.7)'
                 );
-                if (quadrant == 'left') setDirection('LEFT');
-                else if (quadrant == 'right') setDirection('RIGHT');
-                else if (quadrant == 'top') setTilt('UP');
-                else if (quadrant == 'bottom') setTilt('DOWN');
-              }
+                if(quadrant == 'left' || quadrant == 'right'){
+                  setDirection(quadrant);
+                  setTilt(null);
+                }else if (quadrant == 'down' || quadrant == 'up'){
+                  setTilt(quadrant);
+                  setDirection(null);
+                }
+              }*/
             }
 
-            updateReferencePoint(hand);
+            //if(!quadrant) updateReferencePoint(hand, Math.abs(hand.keypoints[0].y - hand.keypoints[5].y));
+            if (!quadrant)
+              updateReferencePoint(
+                indexFingerTip,
+                Math.abs(hand.keypoints[0].y - hand.keypoints[5].y)
+              );
           }
         }
-        if (!found) setLeftHand(null);
+        if (!found) {
+          setLeftHand(null);
+          updatePosition({ x: null, y: null });
+          if (!isFaceEnabled()) {
+            setDirection(null);
+            setTilt(null);
+            setMouthOpened(null);
+          }
+        }
       }
     }
-  }, [mode, detectorFaceRef.current, detectorHandRef.current, videoRef.current, ctx]);
+  }, [
+    mode,
+    detectorFaceRef.current,
+    detectorHandRef.current,
+    videoRef.current,
+    ctx,
+    previousPosition,
+    updatePosition,
+  ]);
 
   useAnimationFrame(
     detect,
